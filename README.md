@@ -2,6 +2,7 @@
 
 ## Implemented API
 - weather query
+- crawling TUM thesis info ([example](https://colab.research.google.com/drive/1XuznN9ifaac-2WvG470kuJINUbNkyzcv?usp=sharing))
 
 ## Roadmap
 - [ ] ...
