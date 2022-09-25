@@ -25,7 +25,7 @@ class YTBInfoBot:
 
     def latest_video_title(self, url):
         html = requests.get(url, headers=self.headers).text
-        # print(html)
+        print(html)
         result = re.findall('''"title":{"runs":[{"text":"[a-zA-Z -_0-9:]*''', html)
         result = result[0]
         index = result.rfind('"', 0, len(result) - 1)
