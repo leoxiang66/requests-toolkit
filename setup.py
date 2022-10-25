@@ -10,7 +10,7 @@ requirements = [
 ]
 
 setup(
-    name="requests-toolkit",
+    name="requests-toolkit-stable",
     version="0.5.0",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",

@@ -8,6 +8,11 @@
 - [ ] ...
 
 ## Usage
+### Install
+```bash
+pip install requests-toolkit-stable
+```
+
 1. python:
   ```python
   #!pip install git+https://github.com/leoxiang66/requests-tutorial.git
