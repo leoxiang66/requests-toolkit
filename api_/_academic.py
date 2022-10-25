@@ -1,3 +1,5 @@
+import sys
+
 import requests
 from typing import List, Union
 import xmltodict
@@ -112,12 +114,30 @@ class IEEEQuery(BaseQuery):
 
     @classmethod
     def query(cls, query: str) -> Union[dict, List[dict]]:
-        with open(f"{cls.PACKAGE_ROOT}/.config.json", 'r', encoding='UTF-8') as f:
-            api_key = json.load(f)['api_key']
+        api_key = ''
+        try:
+            with open(f"{cls.PACKAGE_ROOT}/.config.json", 'r', encoding='UTF-8') as f:
+                api_key = json.load(f)['api_key']
+        except Exception:
+            print('Please first call "IEEEQuery.__setup_api_key__(<your api key>)" to store the api key first.',file=sys.stderr)
+            sys.exit()
+
         endpoint = cls.ENDPOINT + api_key + '&'
         params = cls.__build_params__(query)
         papers = cls.__query__(endpoint,params).json()['articles']
         return papers
+
+    @classmethod
+    def __setup_api_key__(cls, api_key:str):
+        config = {
+            'api_key': api_key
+        }
+
+        jsObj = json.dumps(config)
+        with open(f'{cls.PACKAGE_ROOT}/.config.json', 'w') as f:
+            f.write(jsObj)
+
+
 
 
 
