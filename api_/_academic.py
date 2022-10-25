@@ -7,10 +7,9 @@ from pathlib import Path
 import json
 class BaseQuery:
     # class atributes
-    if __name__ == '__main__':
-        PACKAGE_ROOT = '.'
-    else:
-        PACKAGE_ROOT = str(Path(__package__).absolute())
+
+    PACKAGE_ROOT = '.'
+
 
 
     HEADERS = {

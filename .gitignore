@@ -9,7 +9,7 @@ __pycache__/
 # Distribution / packaging
 upload_to_pypi.sh
 main.py
-api_/.config.json
+.config.json
 .Python
 devenv
 .idea
