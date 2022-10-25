@@ -1,9 +1,7 @@
 import sys
-
 import requests
 from typing import List, Union
 import xmltodict
-from pathlib import Path
 import json
 class BaseQuery:
     # class atributes
