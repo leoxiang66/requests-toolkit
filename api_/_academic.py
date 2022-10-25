@@ -107,7 +107,7 @@ class IEEEQuery(BaseQuery):
     @classmethod
     def __build_params__(cls, query: str):
         return {
-            'query': query
+            'querytext': query
         }
 
     @classmethod
