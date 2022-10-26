@@ -90,7 +90,7 @@ class ArxivQuery(BaseQuery):
 class IEEEQuery(BaseQuery):
     '''
     an example query url:
-    https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter&apikey={API_KEY}&querytext=BERT
+    https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter&apikey={API_KEY}&querytext=BERT&max_records=200&start_year=2019&end_year=2021
     '''
 
     '''
@@ -104,14 +104,23 @@ class IEEEQuery(BaseQuery):
     ENDPOINT = 'https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter&apikey='
 
     @classmethod
-    def __build_params__(cls, query: str):
+    def __build_params__(cls, query: str,start_year: int ,end_year: int,num_papers: int = 200 ):
+        num_papers = min(num_papers,200)
+        end_year = max(start_year,end_year)
         return {
-            'querytext': query
+            'querytext': query,
+            'max_records': num_papers,
+            'start_year': start_year,
+            'end_year': end_year
         }
 
     @classmethod
-    def query(cls, query: str) -> Union[dict, List[dict]]:
-        api_key = ''
+    def query(cls,
+              query: str,
+              start_year: int ,
+              end_year: int,
+              num_papers: int = 200
+              ) -> Union[dict, List[dict]]:
         try:
             with open(f"{cls.PACKAGE_ROOT}/.config.json", 'r', encoding='UTF-8') as f:
                 api_key = json.load(f)['api_key']
@@ -120,7 +129,7 @@ class IEEEQuery(BaseQuery):
             sys.exit()
 
         endpoint = cls.ENDPOINT + api_key + '&'
-        params = cls.__build_params__(query)
+        params = cls.__build_params__(query,start_year,end_year,num_papers)
         papers = cls.__query__(endpoint,params).json()['articles']
         return papers
 
@@ -140,9 +149,4 @@ class IEEEQuery(BaseQuery):
 
 
 
-if __name__ == '__main__':
-    print(PaperWithCodeQuery.query('hello')[0])
-    print(ArxivQuery.query('bert',max_results=1))
-    # print(requests.get(url='http://export.arxiv.org/api/query?search_query=bert&max_results=1').content)
-    print(IEEEQuery.query('bert')[0])
 
