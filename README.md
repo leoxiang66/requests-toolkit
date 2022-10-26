@@ -18,7 +18,7 @@ pip install requests-toolkit-stable
 1. python:
   ```python
   #!pip install git+https://github.com/leoxiang66/requests-tutorial.git
-  from api_ import today_weather
+  from requests_toolkit import today_weather
   today_weather('shanghai')
 
   '''
