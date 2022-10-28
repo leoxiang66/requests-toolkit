@@ -28,8 +28,13 @@ class AirQualityQuery:
         )).json()
 
         response_state = tmp['status']
-        if response_state != 'success':
-            raise RuntimeError('API access failed. Please validate the API key.')
+        while response_state != 'success':
+            time.sleep(10)
+            tmp = requests.get(url, dict(
+                country=country,
+                key=cls.KEY
+            )).json()
+            response_state = tmp['status']
         provinces = [x['state'] for x in tmp['data']]
         return provinces
 
@@ -44,7 +49,6 @@ class AirQualityQuery:
 
         response_state = tmp['status']
         while response_state != 'success':
-            # raise RuntimeError(f'Response Status: {response_state}.\nAPI access failed. Please validate the API key.')
             time.sleep(10)
             tmp = requests.get(url, dict(
                 state=province,
