@@ -6,12 +6,13 @@ with open("README.md", "r") as readme_file:
 requirements = [
     "lxml",
     'requests',
-    "xmltodict"
+    "xmltodict",
+    'tqdm'
 ]
 
 setup(
     name="requests-toolkit-stable",
-    version="0.9.0",
+    version="0.9.1",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",
     description="A package of APIs using requests.",
