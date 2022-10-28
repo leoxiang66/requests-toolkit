@@ -1,10 +1,10 @@
 # requests-toolkit
 
 ## Implemented API
-- weather query
-- crawling TUM thesis info ([example](https://colab.research.google.com/drive/1XuznN9ifaac-2WvG470kuJINUbNkyzcv?usp=sharing))
-- academic query
-- TUM thesis info crawling
+- Weather Query
+- Crawling TUM Thesis Info ([example](https://colab.research.google.com/drive/1XuznN9ifaac-2WvG470kuJINUbNkyzcv?usp=sharing))
+- Academic Query
+- Air Quality by Country
 
 ## Roadmap
 - [ ] ...
