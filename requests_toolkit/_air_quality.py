@@ -100,7 +100,7 @@ class AirQualityQuery:
 
 
         aqi_values.sort(key= lambda x: x[2])
-        return aqi_values
+        yield aqi_values
 
 
 if __name__ == '__main__':
