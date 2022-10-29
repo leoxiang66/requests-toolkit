@@ -100,12 +100,43 @@ class AirQualityQuery:
 
 
         aqi_values.sort(key= lambda x: x[2])
+        aqi_mean = sum([x[2] for x in aqi_values]) / len(aqi_values)
+        aqi_values.append(('mean', country, aqi_mean))
         yield aqi_values
+
+    @classmethod
+    def air_quality_by_province_country(cls,country:str,province_:str):
+        province = province_[0].upper()
+        province += province_[1:]
+
+        if country not in cls.CITIES:
+            data = cls.__get_cities_in_country__(country)
+        else:
+            data = cls.CITIES[country]
+        if province not in data.keys():
+            raise RuntimeError('There is no such province in this country.')
+
+        cities = data[province] # [str]
+        url = f'''https://www.iqair.com/{country.lower()}/{province.lower()}'''
+        aqi_values = []
+        for city in cities:
+            html = requests.get(f'''{url}/{city.lower()}''', headers=cls.HEADERS).text
+            try:
+                aqi = int(etree.HTML(html).xpath('//p[@class="aqi-value__value"]//text()')[0])
+            except:
+                continue
+            aqi_values.append((city, province, aqi))
+
+        aqi_values.sort(key=lambda x: x[2])
+        aqi_mean = sum([x[2] for x in aqi_values])/len(aqi_values)
+        aqi_values.append(('mean',province,aqi_mean))
+        return aqi_values
 
 
 if __name__ == '__main__':
     # print(AirQualityQuery.__get__provinces__('china'))
-    generator = AirQualityQuery.air_quality_by_country('china', 10)
-    for i in generator:
-        print(i)
-        print()
+    # generator = AirQualityQuery.air_quality_by_country('china', 10)
+    # for i in generator:
+    #     print(i)
+    #     print()
+    print(AirQualityQuery.air_quality_by_province_country('china','fujian'))
