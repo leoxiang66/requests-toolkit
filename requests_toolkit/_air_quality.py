@@ -88,8 +88,6 @@ class AirQualityQuery:
         else:
             data = cls.CITIES[country]
 
-        url = f'''https://www.iqair.com/{country.lower()}'''
-
         aqi_values = []
 
         for prov in data.keys():
