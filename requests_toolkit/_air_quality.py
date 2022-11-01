@@ -82,7 +82,7 @@ class AirQualityQuery:
         return cls.CITIES[country]
 
     @classmethod
-    def air_quality_by_country(cls, country: str, return_frequency: int = None):
+    def air_quality_by_country(cls, country: str):
         if country not in cls.CITIES:
             data = cls.__get_cities_in_country__(country)
         else:
