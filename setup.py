@@ -8,12 +8,13 @@ requirements = [
     'requests',
     "xmltodict",
     'tqdm',
-    'aiohttp'
+    'aiohttp',
+    'pandas'
 ]
 
 setup(
     name="requests-toolkit-stable",
-    version="0.12.0",
+    version="0.12.1",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",
     description="A package of APIs using requests.",

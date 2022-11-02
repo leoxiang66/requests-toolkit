@@ -16,3 +16,6 @@ def exchange_rate_cn() -> pd.DataFrame:
     rates[0][1] = '代码'
 
     return pd.DataFrame(rates)
+
+if __name__ == '__main__':
+    print(exchange_rate_cn())
