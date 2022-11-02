@@ -5,6 +5,7 @@
 - Crawling TUM Thesis Info ([example](https://colab.research.google.com/drive/1XuznN9ifaac-2WvG470kuJINUbNkyzcv?usp=sharing))
 - Academic Query
 - Air Quality by Country
+- Real Time Exchange Rate (CN)
 
 ## Roadmap
 - [ ] ...
