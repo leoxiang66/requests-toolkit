@@ -6,6 +6,7 @@
 - Academic Query
 - Air Quality by Country
 - Real Time Exchange Rate (CN)
+- RealPython News
 
 ## Roadmap
 - [ ] ...

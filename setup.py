@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as readme_file:
+with open("README.md", "r",encoding='UTF-8') as readme_file:
     readme = readme_file.read()
 
 requirements = [
@@ -14,7 +14,7 @@ requirements = [
 
 setup(
     name="requests-toolkit-stable",
-    version="0.13.0",
+    version="0.13.1",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",
     description="A package of APIs using requests.",
