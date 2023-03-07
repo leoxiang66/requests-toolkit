@@ -1,5 +1,5 @@
 # source: https://platform.openai.com/docs/api-reference/introduction
-
+from pprint import pprint
 import requests
 from typing import Union, List, Awaitable
 import aiohttp
@@ -22,15 +22,26 @@ class ChatGPT:
             "Content-Type": "application/json",
             "Authorization": "Bearer {}".format(api_key)
         }
-        self.knowledge_base= []
+        self.knowledge_base= dict()
 
-    def __build_KB__(self):
-        return ', '.join(self.knowledge_base)
+    def print_KB(self):
+        pprint(self.knowledge_base)
 
-    def reply(self,
-                param: ChatCompletionConfig
-              ) ->Union[List[str], Awaitable]:
+    def __update_KB__(self, key:str, value:str):
+        if key not in self.knowledge_base:
+            self.knowledge_base[key] = [value]
+        else:
+            self.knowledge_base[key].append(value)
 
+
+    def __render_KB__(self,user_name:str):
+        if user_name in self.knowledge_base:
+            return ', '.join(self.knowledge_base[user_name])
+        else:
+            return ''
+    def __build_headers_data__(self,param:ChatCompletionConfig):
+        # 设置请求头和参数
+        headers = self.headers
         user_msg = param.user_msg
         local_system = param.local_system
         assistant = param.assistant
@@ -43,31 +54,43 @@ class ChatGPT:
         presence_penalty = param.presence_penalty
         frequency_penalty = param.frequency_penalty
         user_name = param.user_name
-        only_response = param.only_response
-
-        self.knowledge_base.append(user_msg)
-
-        # 设置请求头和参数
-        headers = self.headers
 
         data = dict(
-            model= self.model,
-            messages = [
+            model=self.model,
+            messages=[
                 {'role': 'system', 'content': self.global_system if local_system is None else local_system},
                 {"role": "user", "content": user_msg},
-                {'role': "assistant", 'content':assistant if assistant is not None else self.__build_KB__()}
+                {'role': "assistant", 'content': assistant if assistant is not None else self.__render_KB__(param.user_name)}
             ],
-            temperature= temperature,
-            top_p = top_p,
-            n = n,
-            stream = stream,
-            stop = stop,
-            max_tokens= max_tokens,
-            presence_penalty = presence_penalty,
-            frequency_penalty = frequency_penalty,
-            user = user_name
+            temperature=temperature,
+            top_p=top_p,
+            n=n,
+            stream=stream,
+            stop=stop,
+            max_tokens=max_tokens,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            user=user_name
         )
-        return self.__request__(headers,data,only_response)
+        return dict(
+            headers = headers,
+            data = data
+        )
+
+    def reply(self,
+                param: ChatCompletionConfig
+              ) ->Union[List[str], Awaitable]:
+
+        # 1. build headers and data
+        _  = self.__build_headers_data__(param)
+        headers = _['headers']
+        data = _['data']
+
+        # 2. update knowledge base
+        self.__update_KB__(param.user_name,param.user_msg)
+
+        # 3. return request
+        return self.__request__(headers,data,param.only_response)
 
     def __request__(self,headers, data, only_response):
         raise NotImplementedError()
@@ -115,42 +138,11 @@ class AsyncChatGPT(ChatGPT):
                             params: List[ChatCompletionConfig]
                           ):
         async def reply(param:ChatCompletionConfig):
-            user_msg = param.user_msg
-            local_system = param.local_system
-            assistant = param.assistant
-            temperature = param.temparature
-            top_p = param.top_p
-            n = param.n
-            stream = param.stream
-            stop = param.stop
-            max_tokens = param.max_tokens
-            presence_penalty = param.presence_penalty
-            frequency_penalty = param.frequency_penalty
-            user_name = param.user_name
-            only_response = param.only_response
+            _ = self.__build_headers_data__(param)
+            headers = _['headers']
+            data = _['data']
 
-            self.knowledge_base.append(user_msg)
-
-            # 设置请求头和参数
-            headers = self.headers
-
-            data = dict(
-                model=self.model,
-                messages=[
-                    {'role': 'system', 'content': self.global_system if local_system is None else local_system},
-                    {"role": "user", "content": user_msg},
-                    {'role': "assistant", 'content': assistant if assistant is not None else self.__build_KB__()}
-                ],
-                temperature=temperature,
-                top_p=top_p,
-                n=n,
-                stream=stream,
-                stop=stop,
-                max_tokens=max_tokens,
-                presence_penalty=presence_penalty,
-                frequency_penalty=frequency_penalty,
-                user=user_name
-            )
+            self.__update_KB__(param.user_name,param.user_msg)
 
             url = 'https://api.openai.com/v1/chat/completions'
             async with aiohttp.ClientSession(headers=headers) as session:
@@ -158,7 +150,7 @@ class AsyncChatGPT(ChatGPT):
                     if response.status == 200:
                         result = await response.json()
 
-                        if only_response:
+                        if param.only_response:
                             tmp = result['choices']
                             return [i['message']['content'] for i in tmp]
                         return result
