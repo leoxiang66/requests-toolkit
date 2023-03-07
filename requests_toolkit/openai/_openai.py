@@ -5,6 +5,7 @@ from typing import Union, List, Awaitable
 import aiohttp
 import asyncio
 from .config import ChatCompletionConfig
+from ..utils import in_jupyter_notebook
 
 
 class ChatGPT:
@@ -116,7 +117,7 @@ class SyncChatGPT(ChatGPT):
 
 class AsyncChatGPT(ChatGPT):
 
-    def __request__(self, headers, data, only_response,jupyter = False):
+    def __request__(self, headers, data, only_response,):
         async def request(headers,data,only_response):
             url = 'https://api.openai.com/v1/chat/completions'
             async with aiohttp.ClientSession(headers=headers) as session:
@@ -129,7 +130,7 @@ class AsyncChatGPT(ChatGPT):
                         return result
                     else:
                         raise IOError(response.json())
-        if jupyter:
+        if in_jupyter_notebook():
             return request(headers,data,only_response)
         return asyncio.run(request(headers,data,only_response))
 
@@ -137,7 +138,6 @@ class AsyncChatGPT(ChatGPT):
 
     def multi_reply(self,
                             params: List[ChatCompletionConfig],
-                            jupyter = False
                           ):
         async def reply(param:ChatCompletionConfig):
             _ = self.__build_headers_data__(param)
@@ -162,7 +162,7 @@ class AsyncChatGPT(ChatGPT):
         async def request(params):
             return await asyncio.gather(*tuple(reply(param) for param in params))
 
-        if jupyter:
+        if in_jupyter_notebook():
             return request(params)
         return asyncio.run(request(params))
 
