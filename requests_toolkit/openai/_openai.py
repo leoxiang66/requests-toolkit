@@ -175,6 +175,16 @@ class AsyncChatGPT(ChatGPT):
         return await asyncio.gather(*tuple(self.reply(param) for param in params))
 
 
-
+if __name__ == '__main__':
+    # chat = SyncChatGPT("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",False,global_system="You're my girl.")
+    #
+    param = ChatCompletionConfig(user_name='leo23', user_msg='hi')
+    param2 = ChatCompletionConfig(user_name='leo26', user_msg='I hate you!')
+    # a= chat.reply(param)
+    #
+    # print(a)
+    b = AsyncChatGPT('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',True)
+    # print(asyncio.run(b.reply(param)))
+    print(asyncio.run(b.multi_reply([param,param2])))
 
 
