@@ -78,7 +78,7 @@ class ChatGPT:
         )
 
     def reply(self,
-                param: ChatCompletionConfig
+                param: ChatCompletionConfig,
               ) ->Union[List[str], Awaitable]:
 
         # 1. build headers and data
@@ -116,26 +116,28 @@ class SyncChatGPT(ChatGPT):
 
 class AsyncChatGPT(ChatGPT):
 
-    def __request__(self, headers, data, only_response):
+    def __request__(self, headers, data, only_response,jupyter = False):
         async def request(headers,data,only_response):
             url = 'https://api.openai.com/v1/chat/completions'
             async with aiohttp.ClientSession(headers=headers) as session:
                 async with session.post(url, json=data) as response:
                     if response.status == 200:
                         result = await response.json()
-
                         if only_response:
                             tmp = result['choices']
                             return [i['message']['content'] for i in tmp]
                         return result
                     else:
                         raise IOError(response.json())
+        if jupyter:
+            return request(headers,data,only_response)
         return asyncio.run(request(headers,data,only_response))
 
 
 
     def multi_reply(self,
-                            params: List[ChatCompletionConfig]
+                            params: List[ChatCompletionConfig],
+                            jupyter = False
                           ):
         async def reply(param:ChatCompletionConfig):
             _ = self.__build_headers_data__(param)
@@ -159,6 +161,9 @@ class AsyncChatGPT(ChatGPT):
 
         async def request(params):
             return await asyncio.gather(*tuple(reply(param) for param in params))
+
+        if jupyter:
+            return request(params)
         return asyncio.run(request(params))
 
 
