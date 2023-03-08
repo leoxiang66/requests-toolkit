@@ -45,8 +45,10 @@ class AsyncReturn(BaseReturn, Awaitable):
     def eval(self):
         if self.value is not None:
             return self.value
-
-        self.value =  asyncio.get_event_loop().run_until_complete(self.data)
+        try:
+            self.value =  asyncio.get_event_loop().run_until_complete(self.data) # script
+        except:
+            self.value = await self.data # jupyter
         return self.value
 
     def __await__(self):
