@@ -48,7 +48,7 @@ class AsyncReturn(BaseReturn, Awaitable):
         try:
             self.value =  asyncio.get_event_loop().run_until_complete(self.data) # script
         except:
-            self.value = await self.data # jupyter
+            self.value = asyncio.run(self.data) # jupyter
         return self.value
 
     def __await__(self):
