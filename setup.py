@@ -15,7 +15,7 @@ requirements = [
 
 setup(
     name="requests-toolkit-stable",
-    version="0.17.1",
+    version="0.18.0",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",
     description="A package of APIs using requests.",

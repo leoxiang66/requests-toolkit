@@ -1,11 +1,11 @@
 # source: https://platform.openai.com/docs/api-reference/introduction
 from pprint import pprint
 import requests
-from typing import Union, List, Awaitable
+from typing import Union, List
 import aiohttp
 import asyncio
 from .config import ChatCompletionConfig
-from ..utils import in_jupyter_notebook
+from ._return import BaseReturn,AsyncReturn
 
 
 class ChatGPT:
@@ -80,7 +80,7 @@ class ChatGPT:
 
     def reply(self,
                 param: ChatCompletionConfig,
-              ) ->Union[List[str], Awaitable]:
+              ) ->Union[BaseReturn, AsyncReturn]:
 
         # 1. build headers and data
         _  = self.__build_headers_data__(param)
@@ -93,7 +93,7 @@ class ChatGPT:
         # 3. return request
         return self.__request__(headers,data,param.only_response)
 
-    def __request__(self,headers, data, only_response,jupyter=None):
+    def __request__(self,headers, data, only_response):
         raise NotImplementedError()
 
 
@@ -110,16 +110,16 @@ class SyncChatGPT(ChatGPT):
             result = response.json()
             if only_response:
                 tmp = result['choices']
-                return [i['message']['content'] for i in tmp]
+                return BaseReturn([i['message']['content'] for i in tmp])
 
-            return result
+            return BaseReturn(result)
         else:
             raise IOError(response.json())
 
 
 class AsyncChatGPT(ChatGPT):
 
-    def __request__(self, headers, data, only_response,jupyter=None):
+    def __request__(self, headers, data, only_response):
         async def request(headers,data,only_response):
             url = 'https://api.openai.com/v1/chat/completions'
             print('send request...')
@@ -134,12 +134,8 @@ class AsyncChatGPT(ChatGPT):
                         return result
                     else:
                         raise IOError(response.json())
-        if jupyter is not None and jupyter == True:
-            return request(headers, data, only_response)
 
-        if in_jupyter_notebook():
-            return request(headers,data,only_response)
-        return asyncio.run(request(headers,data,only_response))
+        return AsyncReturn(asyncio.get_event_loop().create_task(request(headers,data,only_response)))
 
 
 
@@ -151,14 +147,12 @@ class AsyncChatGPT(ChatGPT):
             headers = _['headers']
             data = _['data']
             self.__update_KB__(param.user_name,param.user_msg)
-            return await self.__request__(headers,data,param.only_response,True)
+            return await self.__request__(headers,data,param.only_response)
 
         async def m_request(params):
             return await asyncio.gather(*tuple(reply(param) for param in params))
 
-        if in_jupyter_notebook():
-            return m_request(params)
-        return asyncio.run(m_request(params))
+        return AsyncReturn(asyncio.get_event_loop().create_task(m_request(params)))
 
 
 
