@@ -100,10 +100,12 @@ class ChatGPT:
 class SyncChatGPT(ChatGPT):
 
     def __request__(self, headers, data,only_response,jupyter=None):
-        # 发送请求
+        # send request
+        print('send request...')
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
 
-        # 处理响应
+        # process response
+        print('receive response...')
         if response.status_code == 200:
             result = response.json()
             if only_response:
@@ -120,10 +122,12 @@ class AsyncChatGPT(ChatGPT):
     def __request__(self, headers, data, only_response,jupyter=None):
         async def request(headers,data,only_response):
             url = 'https://api.openai.com/v1/chat/completions'
+            print('send request...')
             async with aiohttp.ClientSession(headers=headers) as session:
                 async with session.post(url, json=data) as response:
                     if response.status == 200:
                         result = await response.json()
+                        print('receive response...')
                         if only_response:
                             tmp = result['choices']
                             return [i['message']['content'] for i in tmp]
