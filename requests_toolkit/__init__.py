@@ -6,4 +6,4 @@ from ._air_quality import AirQualityQuery
 from ._exchange_rate_cn import exchange_rate_cn
 from ._realpython_news import RealPythonNews
 from ._abstracts_arxiv import query_abstracts_arxiv
-from . import openai
+from . import openpy
