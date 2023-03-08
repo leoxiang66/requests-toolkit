@@ -6,6 +6,7 @@ import aiohttp
 import asyncio
 from .config import ChatCompletionConfig
 from ._return import BaseReturn,AsyncReturn
+from openai.error import InvalidRequestError
 
 
 class ChatGPT:
@@ -113,6 +114,8 @@ class SyncChatGPT(ChatGPT):
                 return BaseReturn([i['message']['content'] for i in tmp])
 
             return BaseReturn(result)
+        elif response.status_code == 400:
+            raise InvalidRequestError(message=data['message'],param=data)
         else:
             raise IOError(response.json())
 
@@ -132,6 +135,8 @@ class AsyncChatGPT(ChatGPT):
                             tmp = result['choices']
                             return [i['message']['content'] for i in tmp]
                         return result
+                    elif response.status == 400:
+                        raise InvalidRequestError(message=data['message'], param=data)
                     else:
                         raise IOError(response.json())
 
