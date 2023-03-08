@@ -93,13 +93,13 @@ class ChatGPT:
         # 3. return request
         return self.__request__(headers,data,param.only_response)
 
-    def __request__(self,headers, data, only_response):
+    def __request__(self,headers, data, only_response,jupyter=None):
         raise NotImplementedError()
 
 
 class SyncChatGPT(ChatGPT):
 
-    def __request__(self, headers, data,only_response):
+    def __request__(self, headers, data,only_response,jupyter=None):
         # 发送请求
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
 
@@ -117,7 +117,7 @@ class SyncChatGPT(ChatGPT):
 
 class AsyncChatGPT(ChatGPT):
 
-    def __request__(self, headers, data, only_response,):
+    def __request__(self, headers, data, only_response,jupyter=None):
         async def request(headers,data,only_response):
             url = 'https://api.openai.com/v1/chat/completions'
             async with aiohttp.ClientSession(headers=headers) as session:
@@ -130,6 +130,9 @@ class AsyncChatGPT(ChatGPT):
                         return result
                     else:
                         raise IOError(response.json())
+        if jupyter is not None and jupyter == True:
+            return request(headers, data, only_response)
+
         if in_jupyter_notebook():
             return request(headers,data,only_response)
         return asyncio.run(request(headers,data,only_response))
@@ -143,28 +146,15 @@ class AsyncChatGPT(ChatGPT):
             _ = self.__build_headers_data__(param)
             headers = _['headers']
             data = _['data']
-
             self.__update_KB__(param.user_name,param.user_msg)
+            return await self.__request__(headers,data,param.only_response,True)
 
-            url = 'https://api.openai.com/v1/chat/completions'
-            async with aiohttp.ClientSession(headers=headers) as session:
-                async with session.post(url, json=data) as response:
-                    if response.status == 200:
-                        result = await response.json()
-
-                        if param.only_response:
-                            tmp = result['choices']
-                            return [i['message']['content'] for i in tmp]
-                        return result
-                    else:
-                        raise IOError(response.json())
-
-        async def request(params):
+        async def m_request(params):
             return await asyncio.gather(*tuple(reply(param) for param in params))
 
         if in_jupyter_notebook():
-            return request(params)
-        return asyncio.run(request(params))
+            return m_request(params)
+        return asyncio.run(m_request(params))
 
 
 
