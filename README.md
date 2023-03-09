@@ -7,6 +7,8 @@
 - Air Quality by Country
 - Real Time Exchange Rate (CN)
 - RealPython News
+- async
+- async chatgpt
 
 ## Roadmap
 - [ ] ...
