@@ -151,7 +151,7 @@ class AsyncChatGPT(ChatGPT):
                     elif response.status == 400:
                         raise InvalidRequestError(message=data['messages'],param=data)
                     else:
-                        raise IOError(response.json())
+                        raise IOError(await response.json())
 
         return AsyncReturn(asyncio.get_event_loop().create_task(request(headers,data,only_response)))
 
