@@ -51,7 +51,7 @@ class OpenAI_Translator(BaseTranslator):
                 model='gpt-3.5-turbo',
                 messages=[
                     {'role': 'system',
-                     'content': f"Please translate the following sentences into {self.dst}. Only send back the translated texts. The source sentence is: "},
+                     'content': f"Please translate the following sentences into {self.dst}. Only send back the translated texts and keep the punctuation, the special char such as \"[\", \"]\" unchanged. The source sentence is: "},
                     {"role": "user", "content": text},
                 ],
                 temperature=0
