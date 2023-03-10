@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 # C extensions
+*.pkl
 *.so
 test.py
 test2.py
