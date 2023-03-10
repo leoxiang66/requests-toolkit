@@ -10,7 +10,7 @@ from openai.error import InvalidRequestError
 
 
 class ChatGPT:
-    def __init__(self, api_key:str, model:str='gpt-3.5-turbo', global_system:str= ''):
+    def __init__(self, api_key:str, model:str='gpt-3.5-turbo', global_system:str= '', use_assist:bool = True):
         '''
 
         :param api_key: your openai api key
@@ -25,6 +25,12 @@ class ChatGPT:
             "Authorization": "Bearer {}".format(api_key)
         }
         self.knowledge_base= dict()
+        self.use_assist = use_assist
+        self.__namer__ = -999999
+
+    def __get_unique__name__(self):
+        self.__namer__+=1
+        return str(self.__namer__)
 
     def print_KB(self):
         pprint(self.knowledge_base)
@@ -46,7 +52,6 @@ class ChatGPT:
         headers = self.headers
         user_msg = param.user_msg
         local_system = param.local_system
-        assistant = param.assistant
         temperature = param.temparature
         top_p = param.top_p
         n = param.n
@@ -55,14 +60,22 @@ class ChatGPT:
         max_tokens = param.max_tokens
         presence_penalty = param.presence_penalty
         frequency_penalty = param.frequency_penalty
-        user_name = param.user_name
+        user_name = param.user_name if param.user_name is not None else self.__get_unique__name__()
+
+        if param.assistant is not None:
+            assistant = param.assistant
+        else:
+            if self.use_assist:
+                assistant = self.__render_KB__(param.user_name)
+            else:
+                assistant = ''
 
         data = dict(
             model=self.model,
             messages=[
                 {'role': 'system', 'content': self.global_system if local_system is None else local_system},
                 {"role": "user", "content": user_msg},
-                {'role': "assistant", 'content': assistant if assistant is not None else self.__render_KB__(param.user_name)}
+                {'role': "assistant", 'content': assistant}
             ],
             temperature=temperature,
             top_p=top_p,
@@ -115,7 +128,7 @@ class SyncChatGPT(ChatGPT):
 
             return BaseReturn(result)
         elif response.status_code == 400:
-            raise InvalidRequestError(message=data['message'],param=data)
+            raise InvalidRequestError(message=data['messages'],param=data)
         else:
             raise IOError(response.json())
 
@@ -136,7 +149,7 @@ class AsyncChatGPT(ChatGPT):
                             return [i['message']['content'] for i in tmp]
                         return result
                     elif response.status == 400:
-                        raise InvalidRequestError(message=data['message'], param=data)
+                        raise InvalidRequestError(message=data['messages'],param=data)
                     else:
                         raise IOError(response.json())
 

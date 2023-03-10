@@ -2,9 +2,9 @@ from typing import Union, List
 
 
 class ChatCompletionConfig:
-    def __init__(self,
-        user_name: str,
+    def __init__(self,*,
         user_msg: str,
+        user_name: str = None,
         assistant: str = None,
         local_system:str = None,
         temperature:float = 1,
