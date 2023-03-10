@@ -33,9 +33,9 @@ class HTTPLoop(ThreadPoolLoop):
                     return IOError(result)
 
     @classmethod
-    async def __POST__(cls,url, headers, data, timeout, ssl):
+    async def __POST__(cls,url, headers, data,json, timeout, ssl):
         async with aiohttp.ClientSession() as session:
-            async with session.post(url=url, headers=headers, data=data, timeout=timeout, ssl=ssl) as response:
+            async with session.post(url=url, headers=headers, data=data,json=json , timeout=timeout, ssl=ssl) as response:
                 result = await cls.__process_response__(response)
                 if response.status == 200:
                     return result
@@ -100,8 +100,8 @@ class HTTPLoop(ThreadPoolLoop):
     def get(self,url,headers=None,params=None,timeout=None,ssl=False):
         self.start_new_task(self.__GET__,url,headers,params,timeout,ssl)
 
-    def post(self,url,headers=None,data=None,timeout=None,ssl=False):
-        self.start_new_task(self.__POST__,url,headers,data,timeout,ssl)
+    def post(self,url,headers=None,data=None,json=None, timeout=None,ssl=False):
+        self.start_new_task(self.__POST__,url,headers,data,json,timeout,ssl)
 
     def put(self, url, headers=None, data=None, timeout=None, ssl=False):
         self.start_new_task(self.__PUT__, url, headers, data, timeout, ssl)
