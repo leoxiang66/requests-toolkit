@@ -7,7 +7,10 @@ from typing import List, Union,Dict,Callable
 
 class BasisLoop:
     def __init__(self):
-        self.__loop__ = asyncio.get_event_loop()
+        try:
+            self.__loop__ = asyncio.get_event_loop()
+        except:
+            self.__loop__ = asyncio.new_event_loop()
         self.__tasks__ = []
 
     def get_all_tasks(self):
