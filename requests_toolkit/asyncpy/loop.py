@@ -29,6 +29,8 @@ class BasisLoop:
         self.__tasks__.clear()
     def get_task_statues(self):
         return [t._state for t in self.__tasks__]
+    def sync(self):
+        return self.join()
 
     @staticmethod
     def __create_coro__(async_func, *args):
