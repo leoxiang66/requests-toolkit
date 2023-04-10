@@ -2,7 +2,6 @@ from typing import Dict
 import toml
 from shillelagh.backends.apsw.db import connect
 import concurrent.futures
-
 class IOArgument:
     def __init__(self,gcp_service_account:Dict, sheeturl:str):
         self.GCP = gcp_service_account
@@ -37,13 +36,11 @@ class GSheetIO:
             self.args = IOArgument.fromSecretsTOML()
         else:
             self.args = io_args
-        self.__setup_cursor__()
         self.threading = enable_threading
         if self.threading:
             self.executor = concurrent.futures.ThreadPoolExecutor()
             self.executor.__enter__()
             self.running_tasks = []
-
 
 
     @classmethod
@@ -71,9 +68,6 @@ class GSheetIO:
         print("Login done.")
         return cursor
 
-    def __setup_cursor__(self):
-        self.cursor = self.__login_to_google__()
-        return self.cursor
 
     def run_query(self,query):
         '''
@@ -84,17 +78,17 @@ class GSheetIO:
             Returns: query results
 
             '''
-
+        cursor = self.__login_to_google__()
         sheet_url = self.args.sheeturl
         query = query.replace('SHEET', f'''"{sheet_url}"''')
         if not self.threading:
-            return self.cursor.execute(query)
+            return cursor.execute(query)
         else:
             def lazy(query):
-                return self.cursor.execute(query)
+                return cursor.execute(query)
 
             future = self.executor.submit(lazy,query)
-            self.tasks.append(future)
+            self.running_tasks.append(future)
             return future
 
     def sync(self, timeout:int=10) -> list:
@@ -120,7 +114,6 @@ class GSheetIO:
 
             self.running_tasks.clear()
             return ret
-
 
 
 
