@@ -10,12 +10,14 @@ requirements = [
     'tqdm',
     'aiohttp==3.8.3',
     'pandas',
-    'openai==0.27.0'
+    'openai==0.27.0',
+    'shillelagh==1.1.5',
+    'shillelagh[gsheetsapi]'
 ]
 
 setup(
     name="requests-toolkit-stable",
-    version="0.22.4",
+    version="0.23.0",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",
     description="A package of APIs using requests.",
@@ -26,7 +28,7 @@ setup(
     # py_modules=['timedd']
     install_requires=requirements,
     classifiers=[
-	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.10",
 	"License :: OSI Approved :: MIT License",
     ],
 )
