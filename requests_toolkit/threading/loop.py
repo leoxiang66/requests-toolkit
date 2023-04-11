@@ -5,7 +5,7 @@ from concurrent.futures import Future
 
 class ThreadLoop:
     def __init__(self):
-        self.__loop__ = concurrent.futures.ThreadPoolExecutor()
+        self.__loop__ = concurrent.futures.ThreadPoolExecutor(thread_name_prefix='Thread')
         self.__running_tasks__ = []
         self._inloop_ = True
         self.__loop__.__enter__()
@@ -48,7 +48,11 @@ class ThreadLoop:
             self._inloop_ = True
             self.__loop__.__enter__()
 
-        future = self.__loop__.submit(fn,**kwargs)
+        def wrapper(**kwargs):
+            print(f'''>>> Working on {threading.current_thread()}...''')
+            return fn(**kwargs)
+
+        future = self.__loop__.submit(wrapper,**kwargs)
         if onComplete is not None:
             future.add_done_callback(onComplete)
         self.__running_tasks__.append(future)
