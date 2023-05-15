@@ -9,3 +9,4 @@ from ._abstracts_arxiv import query_abstracts_arxiv
 from . import openpy
 from . import asyncpy
 from . import threading
+from ._inferenceHF import HFBot
