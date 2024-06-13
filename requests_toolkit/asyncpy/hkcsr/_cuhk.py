@@ -39,9 +39,13 @@ async def get_email_and_interests_from_teacher_page(session, url):
         soup = BeautifulSoup(html, "html.parser")
 
         # 提取电子邮件
-        email_tag = soup.find("a", href=lambda href: href and "mailto:" in href)
-        email = email_tag["href"].replace("mailto:", "") if email_tag else None
-
+        email_tag = soup.find("i", class_="fas fa-envelope")
+        if email_tag:
+            email = email_tag.find_next("span")
+            if email:
+                email = email.text
+        else:
+            email = None
         # 提取研究兴趣
         interests = []
         research_areas_section = soup.find('strong', text='Research Areas')
