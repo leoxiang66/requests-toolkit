@@ -4,3 +4,5 @@ from .loop import (
 )
 
 from .http import HTTPLoop
+
+from . import hkcsr

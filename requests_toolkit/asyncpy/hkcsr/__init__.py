@@ -1,0 +1,1 @@
+from ._cuhk import CUHK

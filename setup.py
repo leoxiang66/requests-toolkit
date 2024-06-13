@@ -12,12 +12,13 @@ requirements = [
     'pandas',
     'openai==0.27.0',
     'shillelagh==1.1.5',
-    'shillelagh[gsheetsapi]'
+    'shillelagh[gsheetsapi]',
+    'beautifulsoup4==4.12.3'
 ]
 
 setup(
     name="requests-toolkit-stable",
-    version="0.25.1",
+    version="0.26.0",
     author="Tao Xiang",
     author_email="tao.xiang@tum.de",
     description="A package of APIs using requests.",
