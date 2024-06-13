@@ -1,8 +1,6 @@
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-import ssl
-import certifi
 
 base_url = "https://www.cse.cuhk.edu.hk/people/faculty/"
 headers = {
@@ -13,10 +11,10 @@ headers = {
 async def fetch(session, url, retries=3):
     for attempt in range(retries):
         try:
-            async with session.get(url, headers=headers) as response:
+            async with session.get(url, headers=headers,ssl=False) as response:
                 return await response.text()
         except aiohttp.ClientConnectorError as e:
-            print(f"Attempt {attempt+1} to fetch {url} failed with error: {e}")
+            print(f"Attempt {attempt + 1} to fetch {url} failed with error: {e}")
             await asyncio.sleep(2)  # 等待一段时间后重试
     print(f"Failed to fetch {url} after {retries} attempts")
     return None
@@ -59,11 +57,7 @@ async def get_email_and_interests_from_teacher_page(session, url):
 
 
 async def CUHK():
-    ssl_context = ssl.create_default_context(cafile=certifi.where())
-
-    async with aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=ssl_context)
-    ) as session:
+    async with aiohttp.ClientSession() as session:
         teacher_links = await get_teacher_links(session, base_url)
         teacher_info = {}
 
